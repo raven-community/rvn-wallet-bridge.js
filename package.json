@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "rvnaddrjs": "github:raven-community/rvnaddrjs#master",
-    "ravencoinjs": "^0.1.10",
-    "rvn-wallet-bridge-provider-interface": "gtihub:raven-community/rvn-wallet-bridge-provider-interface#master"
+    "ravencoinjs-lib": "github:raven-community/ravencoinjs-lib#master",
+    "rvn-wallet-bridge-provider-interface": "github:raven-community/rvn-wallet-bridge-provider-interface#master"
   }
 }
