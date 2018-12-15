@@ -1,0 +1,42 @@
+{
+  "name": "rvn-wallet-bridge.js",
+  "version": "0.1.1",
+  "description": "",
+  "main": "lib/rvn-wallet-bridge/index.js",
+  "scripts": {
+    "build": "rm -rf lib && tsc",
+    "docs": "npm run docs:build && npm run docs:touch-nojekyll",
+    "docs:build": "typedoc --out docs src --plugin typedoc-plugin-example-tag",
+    "docs:touch-nojekyll": "touch docs/.nojekyll",
+    "test": "jest",
+    "codecov": "npm run test -- --coverage && codecov"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raven-community/rvn-wallet-bridge.js.git"
+  },
+  "keywords": [],
+  "author": "MSFTserver",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raven-community/rvn-wallet-bridge.js/issues"
+  },
+  "homepage": "https://github.com/raven-community/rvn-wallet-bridge.js#readme",
+  "devDependencies": {
+    "@types/jest": "^23.3.9",
+    "@types/jest-each": "^0.3.2",
+    "codecov": "^3.1.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "tslib": "^1.9.3",
+    "tslint": "^5.11.0",
+    "typedoc": "^0.13.0",
+    "typedoc-plugin-example-tag": "Yuiki/typedoc-plugin-example-tag#master",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "rvnaddrjs": "github:raven-community/rvnaddrjs#master",
+    "ravencoinjs": "^0.1.10",
+    "rvn-wallet-bridge-provider-interface": "gtihub:raven-community/rvn-wallet-bridge-provider-interface#master"
+  }
+}
