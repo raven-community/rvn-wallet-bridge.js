@@ -2,8 +2,8 @@ import Network from "./entities/Network"
 import { NetworkType } from "./entities/Network"
 
 const networks = new Map<number, NetworkType>([
-  [0xE3E1F3E8, NetworkType.MAINNET],
-  [0x0B110907, NetworkType.TESTNET3]
+  [0x4e564152, NetworkType.MAINNET],
+  [0x544e5652, NetworkType.TESTNET]
 ])
 
 export const findNetwork = (magic: number) => {

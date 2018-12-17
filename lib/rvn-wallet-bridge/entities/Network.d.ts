@@ -1,6 +1,6 @@
 export declare enum NetworkType {
     MAINNET = "Mainnet",
-    TESTNET3 = "Testnet3",
+    TESTNET = "Testnet",
     UNKNOWN = "Unknown"
 }
 export default class Network {
