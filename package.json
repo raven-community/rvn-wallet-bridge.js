@@ -1,6 +1,6 @@
 {
   "name": "rvn-wallet-bridge.js",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "",
   "main": "lib/rvn-wallet-bridge/index.js",
   "scripts": {
