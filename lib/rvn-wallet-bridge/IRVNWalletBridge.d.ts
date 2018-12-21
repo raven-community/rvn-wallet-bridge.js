@@ -20,10 +20,10 @@ export default interface IRVNWalletBridge {
      * > "ravencoin:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p"
      * @param changeType The BIP44 change path type.
      * @param index The BIP44 address_index path.
-     * @param assetName The rvn Assetname. If no asset is set the default asset will be set.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
      * @returns The current wallet address.
      */
-    // getAssetAddress(changeType: ChangeType, index?: number, assetName: string): Promise<string>;
+    // getAssetAddress(changeType: ChangeType, index?: number, asset: string): Promise<string>;
     /**
      * Returns the current wallet address index.
      * @example
@@ -34,10 +34,10 @@ export default interface IRVNWalletBridge {
      * console.log(addrIdx)
      * > 3
      * @param changeType The BIP44 change path type.
-     * @param assetName The rvn asset. If no asset is set the default asset will be set.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
      * @returns The current wallet address index.
      */
-    // getAssetAddressIndex(changeType: ChangeType, assetName: string): Promise<number>;
+    // getAssetAddressIndex(changeType: ChangeType, asset: string): Promise<number>;
     /**
      * Returns the wallet address list.
      * @example
@@ -52,10 +52,46 @@ export default interface IRVNWalletBridge {
      * @param changeType The BIP44 change path type.
      * @param startIndex The BIP44 address_index path.
      * @param size The address amount you want.
-     * @param assetName The rvn asset. If no asset is set the default asset will be set.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
      * @returns The wallet address list.
      */
-    // getAssetAddresses(changeType: ChangeType, startIndex?: number, size?: number, assetName: string): Promise<string[]>;
+    // getAssetAddresses(changeType: ChangeType, startIndex?: number, size?: number, asset: string): Promise<string[]>;
+    /**
+     * Returns the stored redeem script.
+     * @example
+     * const redeemScript = await rvnWalletBridge.getRedeemScript(
+     *   "ravencoin:prr7qqutastjmc9dn7nwkv2vcc58nn82uqwzq563hg",
+     *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
+     * )
+     * console.log(redeemScript)
+     * > "03424f587e06424954424f5887"
+     * @param p2shAddress The P2SH Address.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
+     * @returns The stored redeem script.
+     */
+    getRedeemScript(p2shAddress: string, txid: string): Promise<string | undefined>;
+    /**
+     * Returns the stored redeem scripts belong to the DApp ID.
+     * @example
+     * const redeemScripts = await rvnWalletBridge.getRedeemScript(
+     *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
+     * )
+     * console.log(redeemScript)
+     * > ["03424f587e06424954424f5887", "789787a72c21452a1c98ff"]
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
+     * @returns The stored redeem script list.
+     */
+    getRedeemScripts(txid: string): Promise<string[]>;
+    /**
+     * Add the redeem script into the wallet.
+     * @example
+     * await rvnWalletBridge.addRedeemScript(
+     *   "03424f587e064249..."
+     * )
+     * @param redeemScript The redeem script you want to add.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
+     */
+    addRedeemScript(redeemScript: string, txid: string): Promise<void>;
     /**
      * Returns the unspent transaction outputs.
      * @example
@@ -69,10 +105,10 @@ export default interface IRVNWalletBridge {
      *       'outputIndex' : 0,
      *       'address' : 'ravencoin:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p',
      *       'script' : '76a91447862fe165e6121af80d5dde1ecb478ed170565b88ac',
-     *       'corbes' : 50000
+     *       'satoshis' : 50000
      *     }
      *   ]
-     * @param assetName The rvn asset. If no asset is set the default asset will be set.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
      * @returns The unspent transaction output object list.
      */
     getUtxos(address: string): Promise<Utxo[]>;
@@ -84,8 +120,8 @@ export default interface IRVNWalletBridge {
      * )
      * console.log(balance)
      * > 500000
-     * @param address The rvn address. If no address is set the default rvn address will be set.
-     * @returns The current balance for the addresses in corbe.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
+     * @returns The current balance for the addresses in satoshi.
      */
     getBalance(address: string): Promise<number>;
     /**
@@ -99,7 +135,7 @@ export default interface IRVNWalletBridge {
      * > "30440220227e0973..."
      * @param address Address to sign with.
      * @param dataToSign Data to sign in hex format.
-     * @returns The signed data. Ravencoin signatures are serialised in the DER format over the wire.
+     * @returns The signed data. Bitcoin signatures are serialised in the DER format over the wire.
      */
     sign(address: string, dataToSign: string): Promise<string>;
     /**
@@ -115,12 +151,12 @@ export default interface IRVNWalletBridge {
      * console.log(rawtx)
      * > "..."
      * @param outputs The Array of TransactionOutput objects. Throws an error, when the array is empty.
-     * @param address The rvn address. If no address is set the default rvn address will be set.
+     * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
      * @returns The signed raw transaction.
      */
     buildTransaction(outputs: Output[], address: string): Promise<string>;
     /**
-     * Returns the ravencoin protocol version.
+     * Returns the bitcoin protocol version.
      * @example
      * const version = await rvnWalletBridge.getProtocolVersion()
      * console.log(version)
@@ -146,6 +182,7 @@ export default interface IRVNWalletBridge {
      * const fee = await rvnWalletBridge.getFeePerByte()
      * console.log(fee)
      * > 1
-     * @returns Transaction fee per byte in corbe.
+     * @returns Transaction fee per byte in satoshi.
      */
     getFeePerByte(): Promise<number>;
+}

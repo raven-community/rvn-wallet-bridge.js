@@ -4,7 +4,7 @@ import ChangeType from "rvn-wallet-bridge-provider-interface/lib/entities/Change
 import Output from "rvn-wallet-bridge-provider-interface/lib/entities/Output"
 import Utxo from "rvn-wallet-bridge-provider-interface/lib/entities/Utxo"
 
-export default interface IRVNWalletBridge {
+export default interface IBCHWalletBridge {
   /**
    * The current provider set.
    */
@@ -18,16 +18,16 @@ export default interface IRVNWalletBridge {
    *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
    * )
    * console.log(address)
-   * > "ravencoin:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p"
+   * > "bitcoincash:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p"
    * @param changeType The BIP44 change path type.
    * @param index The BIP44 address_index path.
-   * @param assetName The rvn asset. If no asset is set the default asset will be set.
+   * @param asset The Asset Name.
    * @returns The current wallet address.
    */
   // getAssetAddress(
   //   changeType: ChangeType,
   //   index?: number,
-  //   assetName: string
+  //   asset: string
   // ): Promise<string>
 
   /**
@@ -40,12 +40,12 @@ export default interface IRVNWalletBridge {
    * console.log(addrIdx)
    * > 3
    * @param changeType The BIP44 change path type.
-   * @param AssetName The rvn asset. If no asset is set the default asset will be set.
+   * @param asset The asset name.
    * @returns The current wallet address index.
    */
   // getAssetAddressIndex(
   //   changeType: ChangeType,
-  //   assetName: string
+  //   asset: string
   // ): Promise<number>
 
   /**
@@ -58,19 +58,66 @@ export default interface IRVNWalletBridge {
    *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
    * )
    * console.log(addresses)
-   * > ["ravencoin:qrsy0xwugcajsqa...", "ravencoin:qrsfpepw3egqq4k..."]
+   * > ["bitcoincash:qrsy0xwugcajsqa...", "bitcoincash:qrsfpepw3egqq4k..."]
    * @param changeType The BIP44 change path type.
    * @param startIndex The BIP44 address_index path.
    * @param size The address amount you want.
-   * @param assetName The rvn asset. If no asset is set the default asset will be set.
+   * @param asset The asset name.
    * @returns The wallet address list.
    */
   // getAssetAddresses(
   //   changeType: ChangeType,
   //   startIndex?: number,
   //   size?: number,
-  //   assetName: string
+  //   asset: string
   // ): Promise<string[]>
+
+  /**
+   * Returns the stored redeem script.
+   * @example
+   * const redeemScript = await rvnWalletBridge.getRedeemScript(
+   *   "bitcoincash:prr7qqutastjmc9dn7nwkv2vcc58nn82uqwzq563hg",
+   *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
+   * )
+   * console.log(redeemScript)
+   * > "03424f587e06424954424f5887"
+   * @param p2shAddress The P2SH Address.
+   * @param txid The txid.
+   * @returns The stored redeem script.
+   */
+  getRedeemScript(
+    p2shAddress: string,
+    txid: string
+  ): Promise<string | undefined>
+
+  /**
+   * Returns the stored redeem scripts belong to the DApp ID.
+   * @example
+   * const redeemScripts = await rvnWalletBridge.getRedeemScript(
+   *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
+   * )
+   * console.log(redeemScript)
+   * > ["03424f587e06424954424f5887", "789787a72c21452a1c98ff"]
+   * @param txid The txid.
+   * @returns The stored redeem script list.
+   */
+  getRedeemScripts(
+    txid: string
+  ): Promise<string[]>
+
+  /**
+   * Add the redeem script into the wallet.
+   * @example
+   * await rvnWalletBridge.addRedeemScript(
+   *   "03424f587e064249..."
+   * )
+   * @param redeemScript The redeem script you want to add.
+   * @param txid The txid. If no dAppId is set the default DApp ID will be set.
+   */
+  addRedeemScript(
+    redeemScript: string,
+    txid: string
+  ): Promise<void>
 
   /**
    * Returns the unspent transaction outputs.
@@ -83,12 +130,12 @@ export default interface IRVNWalletBridge {
    *     {
    *       'txId' : '115e8f72f39fad874cfab0deed11a80f24f967a84079fb56ddf53ea02e308986',
    *       'outputIndex' : 0,
-   *       'address' : 'ravencoin:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p',
+   *       'address' : 'bitcoincash:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p',
    *       'script' : '76a91447862fe165e6121af80d5dde1ecb478ed170565b88ac',
-   *       'corbes' : 50000
+   *       'satoshis' : 50000
    *     }
    *   ]
-   * @param addres The rvn address. If no address is set the default address will be set.
+   * @param address The address.
    * @returns The unspent transaction output object list.
    */
   getUtxos(
@@ -103,8 +150,8 @@ export default interface IRVNWalletBridge {
    * )
    * console.log(balance)
    * > 500000
-   * @param address The rvn address. If no address is set the default address will be set.
-   * @returns The current balance for the addresses in corbe.
+   * @param dAppId The DApp ID. If no dAppId is set the default DApp ID will be set.
+   * @returns The current balance for the addresses in satoshi.
    */
   getBalance(
     address: string
@@ -114,14 +161,14 @@ export default interface IRVNWalletBridge {
    * Signs data from a specific account. This account needs to be unlocked.
    * @example
    * const result = await rvnWalletBridge.sign(
-   *   "ravencoin:qq28xgrzkdyeg5vf7tp2s3mvx8u95zes5cf7wpwgux",
+   *   "rvntest:qq28xgrzkdyeg5vf7tp2s3mvx8u95zes5cf7wpwgux",
    *   "af4c61ddcc5e8a2d..." // second argument is SHA1("hello")
    * )
    * console.log(result)
    * > "30440220227e0973..."
    * @param address Address to sign with.
    * @param dataToSign Data to sign in hex format.
-   * @returns The signed data. RAvencoin signatures are serialised in the DER format over the wire.
+   * @returns The signed data. Bitcoin signatures are serialised in the DER format over the wire.
    */
   sign(
     address: string,
@@ -141,7 +188,7 @@ export default interface IRVNWalletBridge {
    * console.log(rawtx)
    * > "..."
    * @param outputs The Array of TransactionOutput objects. Throws an error, when the array is empty.
-   * @param address The rvn address. If no address is set the default address will be set.
+   * @param dAppId The DApp ID.
    * @returns The signed raw transaction.
    */
   buildTransaction(
@@ -150,7 +197,7 @@ export default interface IRVNWalletBridge {
   ): Promise<string>
 
   /**
-   * Returns the ravencoin protocol version.
+   * Returns the bitcoin protocol version.
    * @example
    * const version = await rvnWalletBridge.getProtocolVersion()
    * console.log(version)
@@ -178,6 +225,7 @@ export default interface IRVNWalletBridge {
    * const fee = await rvnWalletBridge.getFeePerByte()
    * console.log(fee)
    * > 1
-   * @returns Transaction fee per byte in corbe.
+   * @returns Transaction fee per byte in satoshi.
    */
   getFeePerByte(): Promise<number>
+}

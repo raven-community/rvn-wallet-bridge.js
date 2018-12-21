@@ -4,7 +4,7 @@ export default class Destination {
      */
     address: string;
     /**
-     * The value transferred to the destination address in corbe.
+     * The value transferred to the destination address in satoshi.
      */
     amount: number;
     constructor(address: string, amount: number);

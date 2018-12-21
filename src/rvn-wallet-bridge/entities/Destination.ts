@@ -5,7 +5,7 @@ export default class Destination {
   public address: string
 
   /**
-   * The value transferred to the destination address in corbe.
+   * The value transferred to the destination address in satoshi.
    */
   public amount: number
 

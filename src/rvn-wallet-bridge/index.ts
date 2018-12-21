@@ -4,23 +4,22 @@ import IllegalArgumentException from "./entities/IllegalArgumentException"
 import ProviderException from "./entities/ProviderException"
 import { findNetwork } from "./networks"
 import { isLegacyAddress, isP2SHAddress, toLegacyAddress} from "rvnaddrjs"
-import * as ravencoinjs from "ravencoinjs"
+import * as ravencoinjs from "ravencoinjs-lib"
 import IWalletProvider from "rvn-wallet-bridge-provider-interface/lib/IWalletProvider"
 import ChangeType from "rvn-wallet-bridge-provider-interface/lib/entities/ChangeType"
 import Utxo from "rvn-wallet-bridge-provider-interface/lib/entities/Utxo"
 import Output from "rvn-wallet-bridge-provider-interface/lib/entities/Output"
 
 export default class RVNWalletBridge implements IRVNWalletBridge {
-  private defaultDAppId?: string
 
   constructor(public walletProvider?: IWalletProvider) {}
 
   // public getAssetAddress(
   //   changeType: ChangeType,
   //   index?: number,
-  //   assetName: string
+  //   asset: string
   // ): Promise<string> {
-  //   return this.getAddresses(changeType, index, 1, dAppId)
+  //   return this.getAddresses(changeType, index, 1, asset)
   //     .then((addresses) => {
   //       const address = addresses[0]
   //       if (typeof address !== "string") {
@@ -33,10 +32,10 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
 
   // public getAssetAddressIndex(
   //   changeType: ChangeType,
-  //   assetName: string
+  //   asset: string
   // ): Promise<number> {
   //   const walletProvider = this.checkWalletProvider()
-  //   return walletProvider.getAddressIndex(changeType, dAppId || this.defaultDAppId)
+  //   return walletProvider.getAddressIndex(changeType, asset)
   //     .then((index) => {
   //       if (!Number.isInteger(index) || index < 0 || index > 2147483647) {
   //         throw new ProviderException("The return value is invalid.")
@@ -50,7 +49,7 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
   //   changeType: ChangeType,
   //   startIndex?: number,
   //   size?: number,
-  //   assetName: string
+  //   dAppId?: string
   // ): Promise<string[]> {
   //   if (startIndex) {
   //     if (!Number.isInteger(startIndex) || startIndex < 0 || startIndex > 2147483647) {
@@ -68,7 +67,7 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
   //     }
   //   }
   //   const walletProvider = this.checkWalletProvider()
-  //   return walletProvider.getAddresses(changeType, size || 1, startIndex, dAppId || this.defaultDAppId)
+  //   return walletProvider.getAddresses(changeType, size || 1, startIndex, asset)
   //     .then((addresses) => {
   //       if (!(addresses instanceof Array) || addresses.length === 0 || typeof addresses[0] !== "string") {
   //         throw new ProviderException("The return value is invalid.")
@@ -78,12 +77,52 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
   //     .catch((e) => { throw new ProviderException(e) })
   // }
 
+  public async getRedeemScript(
+    p2shAddress: string,
+    address: string
+  ): Promise<string | undefined> {
+    if (!this.isP2SHLegacyAddress(p2shAddress)) {
+      throw new IllegalArgumentException("The address is not P2SH Address or Rvn Address.")
+    }
+    const redeemScripts = await this.getRedeemScripts(address)
+    return redeemScripts.find((script) => this.toAddressFromScript(script) === p2shAddress)
+  }
+
+  public async getRedeemScripts(
+    address: string
+  ): Promise<string[]> {
+    const walletProvider = this.checkWalletProvider()
+    const redeemScripts = await walletProvider.getRedeemScripts(address)
+      .catch((e) => { throw new ProviderException(e) })
+    if (!Array.isArray(redeemScripts) || (redeemScripts.length > 0 && typeof redeemScripts[0] !== "string")) {
+      throw new ProviderException("The WalletProvider provides invalid type.")
+    }
+    return redeemScripts
+  }
+
+  public async addRedeemScript(
+    redeemScript: string,
+    address: string
+  ): Promise<void> {
+    if (redeemScript.length < 1) {
+      throw new IllegalArgumentException("The redeemScript cannot be empty.")
+    }
+
+    const walletProvider = this.checkWalletProvider()
+    const result = await walletProvider.addRedeemScript(redeemScript, address)
+      .catch((e) => { throw new ProviderException(e) })
+
+    if (typeof result !== "undefined") {
+      throw new ProviderException("The provider returns illegal value.")
+    }
+  }
+
   public async getUtxos(
     address: string
   ): Promise<Utxo[]> {
     const walletProvider = this.checkWalletProvider()
     const utxos: Utxo[] = []
-    if (address) {
+    if (dAppId) {
       const unspendableUtxos = await walletProvider.getUnspendableUtxos(address)
         .catch((e) => {
           throw new ProviderException(e)
@@ -129,7 +168,7 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
     dataToSign: string
   ): Promise<string> {
     if (!this.isLegacyAddress(address)) {
-      throw new IllegalArgumentException("The address is not Legacy Address format.")
+      throw new IllegalArgumentException("The address is not RVN Address format.")
     }
 
     if (dataToSign.length === 0) {
@@ -151,7 +190,7 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
 
   public async buildTransaction(
     outputs: Output[],
-    address: string
+    dAppId?: string
   ): Promise<string> {
     if (outputs.length === 0) {
       throw new IllegalArgumentException("The outputs cannot be empty.")
@@ -240,10 +279,11 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
   }
 
   private async createSignedTx(
-    outputs: Output[]
+    outputs: Output[],
+    address: string
   ): Promise<string> {
     const walletProvider = this.checkWalletProvider()
-    const rawtx = await walletProvider.createSignedTx(outputs)
+    const rawtx = await walletProvider.createSignedTx(outputs, address)
       .catch((e) => { throw new ProviderException(e) })
     if (typeof rawtx !== "string") {
       throw new ProviderException("The return value is invalid.")
