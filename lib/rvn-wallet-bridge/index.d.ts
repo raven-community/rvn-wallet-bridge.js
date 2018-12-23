@@ -1,10 +1,10 @@
 import IRVNWalletBridge from "./IRVNWalletBridge";
 import Network from "./entities/Network";
-import IWalletProvider from "bch-wallet-bridge-provider-interface/lib/IWalletProvider";
-import ChangeType from "bch-wallet-bridge-provider-interface/lib/entities/ChangeType";
-import Utxo from "bch-wallet-bridge-provider-interface/lib/entities/Utxo";
-import Output from "bch-wallet-bridge-provider-interface/lib/entities/Output";
-export default class RVNWalletBridge implements IBCHWalletBridge {
+import IWalletProvider from "rvn-wallet-bridge-provider-interface/lib/IWalletProvider";
+import ChangeType from "rvn-wallet-bridge-provider-interface/lib/entities/ChangeType";
+import Utxo from "rvn-wallet-bridge-provider-interface/lib/entities/Utxo";
+import Output from "rvn-wallet-bridge-provider-interface/lib/entities/Output";
+export default class RVNWalletBridge implements IRVNWalletBridge {
     walletProvider?: IWalletProvider | undefined;
     private defaultDAppId?;
     constructor(walletProvider?: IWalletProvider | undefined);

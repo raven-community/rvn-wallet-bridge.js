@@ -4,7 +4,7 @@ import ChangeType from "rvn-wallet-bridge-provider-interface/lib/entities/Change
 import Output from "rvn-wallet-bridge-provider-interface/lib/entities/Output"
 import Utxo from "rvn-wallet-bridge-provider-interface/lib/entities/Utxo"
 
-export default interface IBCHWalletBridge {
+export default interface IRVNWalletBridge {
   /**
    * The current provider set.
    */
@@ -18,7 +18,7 @@ export default interface IBCHWalletBridge {
    *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
    * )
    * console.log(address)
-   * > "bitcoincash:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p"
+   * > "qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p"
    * @param changeType The BIP44 change path type.
    * @param index The BIP44 address_index path.
    * @param asset The Asset Name.
@@ -58,7 +58,7 @@ export default interface IBCHWalletBridge {
    *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
    * )
    * console.log(addresses)
-   * > ["bitcoincash:qrsy0xwugcajsqa...", "bitcoincash:qrsfpepw3egqq4k..."]
+   * > ["qrsy0xwugcajsqa...", "qrsfpepw3egqq4k..."]
    * @param changeType The BIP44 change path type.
    * @param startIndex The BIP44 address_index path.
    * @param size The address amount you want.
@@ -76,7 +76,7 @@ export default interface IBCHWalletBridge {
    * Returns the stored redeem script.
    * @example
    * const redeemScript = await rvnWalletBridge.getRedeemScript(
-   *   "bitcoincash:prr7qqutastjmc9dn7nwkv2vcc58nn82uqwzq563hg",
+   *   "prr7qqutastjmc9dn7nwkv2vcc58nn82uqwzq563hg",
    *   "53212266f7994100e442f6dff10fbdb50a93121d25c196ce0597517d35d42e68"
    * )
    * console.log(redeemScript)
@@ -130,7 +130,7 @@ export default interface IBCHWalletBridge {
    *     {
    *       'txId' : '115e8f72f39fad874cfab0deed11a80f24f967a84079fb56ddf53ea02e308986',
    *       'outputIndex' : 0,
-   *       'address' : 'bitcoincash:qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p',
+   *       'address' : 'qrsy0xwugcajsqa99c9nf05pz7ndckj55ctlsztu2p',
    *       'script' : '76a91447862fe165e6121af80d5dde1ecb478ed170565b88ac',
    *       'satoshis' : 50000
    *     }
@@ -168,7 +168,7 @@ export default interface IBCHWalletBridge {
    * > "30440220227e0973..."
    * @param address Address to sign with.
    * @param dataToSign Data to sign in hex format.
-   * @returns The signed data. Bitcoin signatures are serialised in the DER format over the wire.
+   * @returns The signed data. Ravencoin signatures are serialised in the DER format over the wire.
    */
   sign(
     address: string,
@@ -197,7 +197,7 @@ export default interface IBCHWalletBridge {
   ): Promise<string>
 
   /**
-   * Returns the bitcoin protocol version.
+   * Returns the ravencoin protocol version.
    * @example
    * const version = await rvnWalletBridge.getProtocolVersion()
    * console.log(version)

@@ -135,7 +135,7 @@ export default interface IRVNWalletBridge {
      * > "30440220227e0973..."
      * @param address Address to sign with.
      * @param dataToSign Data to sign in hex format.
-     * @returns The signed data. Bitcoin signatures are serialised in the DER format over the wire.
+     * @returns The signed data. Ravencoin signatures are serialised in the DER format over the wire.
      */
     sign(address: string, dataToSign: string): Promise<string>;
     /**
@@ -156,7 +156,7 @@ export default interface IRVNWalletBridge {
      */
     buildTransaction(outputs: Output[], address: string): Promise<string>;
     /**
-     * Returns the bitcoin protocol version.
+     * Returns the ravencoin protocol version.
      * @example
      * const version = await rvnWalletBridge.getProtocolVersion()
      * console.log(version)
