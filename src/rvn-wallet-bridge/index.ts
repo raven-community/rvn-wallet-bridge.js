@@ -160,7 +160,7 @@ export default class RVNWalletBridge implements IRVNWalletBridge {
     address: string
   ): Promise<number> {
     const utxos = await this.getUtxos(address)
-    return utxos.reduce((balance, utxo) => balance + utxo.corbes, 0)
+    return utxos.reduce((balance, utxo) => balance + utxo.satoshis, 0)
   }
 
   public async sign(
