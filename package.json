@@ -1,6 +1,6 @@
 {
   "name": "rvn-wallet-bridge.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "lib/rvn-wallet-bridge/index.js",
   "scripts": {
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "rvnaddrjs": "^1.0.0",
-    "ravencoinjs-lib": "github:raven-community/ravencoinjs-lib#master",
+    "ravencoinjs-lib": "github:raven-community/ravencoinjs-lib/tree/1.0.0",
     "rvn-wallet-bridge-provider-interface": "^1.0.0"
   }
 }
